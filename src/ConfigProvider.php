@@ -12,13 +12,24 @@ class ConfigProvider
     public function __invoke() : array
     {
         return [
+            'authentication' => $this->getAuthenticationConfig(),
             'dependencies' => $this->getDependencies(),
+        ];
+    }
+
+    public function getAuthenticationConfig() : array
+    {
+        return [
+            'redirect' => '', // URL to which to redirect for invalid credentials
         ];
     }
 
     public function getDependencies() : array
     {
         return [
+            'factories' => [
+                ZendAuthentication::class => ZendAuthenticationFactory::class,
+            ],
         ];
     }
 }
