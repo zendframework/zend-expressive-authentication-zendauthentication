@@ -1,12 +1,12 @@
 {
-    "name": "zendframework/zend-exprsesive-authentication-zendauthentication",
-    "description": "<package description; should match repository description>",
+    "name": "zendframework/zend-expressive-authentication-zendauthentication",
+    "description": "zend-authentication adapter for zend-expressive-authentication.",
     "license": "BSD-3-Clause",
     "keywords": [
         "expressive",
         "zf",
         "zendframework",
-        "<individual keywords for current package>"
+        "authentication"
     ],
     "support": {
         "docs": "https://docs.zendframework.com/zend-exprsesive-authentication-zendauthentication/",

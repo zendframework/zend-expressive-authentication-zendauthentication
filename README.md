@@ -1,16 +1,17 @@
-# zend-exprsesive-authentication-zendauthentication
+# zend-expressive-authentication-zendauthentication
 
-[![Build Status](https://secure.travis-ci.org/zendframework/zend-exprsesive-authentication-zendauthentication.svg?branch=master)](https://secure.travis-ci.org/zendframework/zend-exprsesive-authentication-zendauthentication)
-[![Coverage Status](https://coveralls.io/repos/github/zendframework/zend-exprsesive-authentication-zendauthentication/badge.svg?branch=master)](https://coveralls.io/github/zendframework/zend-exprsesive-authentication-zendauthentication?branch=master)
+[![Build Status](https://secure.travis-ci.org/zendframework/zend-expressive-authentication-zendauthentication.svg?branch=master)](https://secure.travis-ci.org/zendframework/zend-expressive-authentication-zendauthentication)
+[![Coverage Status](https://coveralls.io/repos/github/zendframework/zend-expressive-authentication-zendauthentication/badge.svg?branch=master)](https://coveralls.io/github/zendframework/zend-expressive-authentication-zendauthentication?branch=master)
 
-This library provides ... 
+This library provides a [zend-authentication](https://docs.zendframework.com/zend-authentication)
+adapter for use with [zend-expressive-authentication](https://docs.zendframework.com/zend-expressive-authentication).
 
 ## Installation
 
 Run the following to install this library:
 
 ```bash
-$ composer require zendframework/zend-exprsesive-authentication-zendauthentication
+$ composer require zendframework/zend-expressive-authentication-zendauthentication
 ```
 
 ## Documentation
@@ -21,4 +22,4 @@ Documentation is [in the doc tree](docs/book/), and can be compiled using [mkdoc
 $ mkdocs build
 ```
 
-You may also [browse the documentation online](https://docs.zendframework.com/zend-exprsesive-authentication-zendauthentication/).
+You may also [browse the documentation online](https://docs.zendframework.com/zend-expressive-authentication-zendauthentication/).
