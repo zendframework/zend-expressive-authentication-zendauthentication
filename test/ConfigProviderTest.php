@@ -1,8 +1,10 @@
 <?php
 /**
- * @see       https://github.com/zendframework/zend-exprsesive-authentication-zendauthentication for the canonical source repository
+ * @see https://github.com/zendframework/zend-exprsesive-authentication-zendauthentication
+ *     for the canonical source repository
  * @copyright Copyright (c) 2017 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   https://github.com/zendframework/zend-exprsesive-authentication-zendauthentication/blob/master/LICENSE.md New BSD License
+ * @license https://github.com/zendframework/zend-exprsesive-authentication-zendauthentication/blob/master/LICENSE.md
+ *     New BSD License
  */
 
 namespace ZendTest\Expressive\Authentication\ZendAuthentication;
@@ -31,5 +33,14 @@ class ConfigProviderTest extends TestCase
     {
         $this->assertArrayHasKey('dependencies', $config);
         $this->assertInternalType('array', $config['dependencies']);
+    }
+
+    /**
+     * @depends testInvocationReturnsArray
+     */
+    public function testReturnedArrayContainsAuthenticationConfig(array $config)
+    {
+        $this->assertArrayHasKey('authentication', $config);
+        $this->assertInternalType('array', $config['authentication']);
     }
 }

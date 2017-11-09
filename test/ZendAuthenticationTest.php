@@ -1,9 +1,12 @@
 <?php
 /**
- * @see       https://github.com/zendframework/zend-expressive-authentication-zendauthentication for the canonical source repository
+ * @see https://github.com/zendframework/zend-exprsesive-authentication-zendauthentication
+ *     for the canonical source repository
  * @copyright Copyright (c) 2017 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   https://github.com/zendframework/zend-expressive-authentication-zendauthentication/blob/master/LICENSE.md New BSD License
+ * @license https://github.com/zendframework/zend-exprsesive-authentication-zendauthentication/blob/master/LICENSE.md
+ *     New BSD License
  */
+
 namespace ZendTest\Expressive\Authentication\Adapter;
 
 use PHPUnit\Framework\TestCase;
