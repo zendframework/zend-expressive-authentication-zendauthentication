@@ -62,7 +62,7 @@ class ZendAuthentication implements AuthenticationInterface
         }
 
         return $this->auth->hasIdentity()
-            ? $this->generateUser($this->auth->getIdentity(), '')
+            ? $this->generateUser($this->auth->getIdentity(), [])
             : null;
     }
 
@@ -98,6 +98,6 @@ class ZendAuthentication implements AuthenticationInterface
         }
 
         // @todo the role is missing
-        return $this->generateUser($result->getIdentity(), '');
+        return $this->generateUser($result->getIdentity(), []);
     }
 }
