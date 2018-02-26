@@ -2,7 +2,7 @@
 /**
  * @see https://github.com/zendframework/zend-exprsesive-authentication-zendauthentication
  *     for the canonical source repository
- * @copyright Copyright (c) 2017 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2017-2018 Zend Technologies USA Inc. (http://www.zend.com)
  * @license https://github.com/zendframework/zend-exprsesive-authentication-zendauthentication/blob/master/LICENSE.md
  *     New BSD License
  */
@@ -11,6 +11,7 @@ namespace ZendTest\Expressive\Authentication\ZendAuthentication;
 
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Zend\Authentication\AuthenticationService;
@@ -20,18 +21,32 @@ use Zend\Expressive\Authentication\ZendAuthentication\ZendAuthenticationFactory;
 
 class ZendAuthenticationFactoryTest extends TestCase
 {
+    /** @var ContainerInterface|ObjectProphecy */
+    private $container;
+
+    /** @var ZendAuthentication */
+    private $factory;
+
+    /** @var AuthenticationService|ObjectProphecy */
+    private $authService;
+
+    /** @var callable */
+    private $responseFactory;
+
     protected function setUp()
     {
         $this->container = $this->prophesize(ContainerInterface::class);
         $this->factory = new ZendAuthenticationFactory();
         $this->authService = $this->prophesize(AuthenticationService::class);
-        $this->responsePrototype = $this->prophesize(ResponseInterface::class);
+        $this->responseFactory = function () {
+            return $this->prophesize(ResponseInterface::class)->reveal();
+        };
     }
 
     public function testInvokeWithEmptyContainer()
     {
         $this->expectException(InvalidConfigException::class);
-        $zendAuthentication = ($this->factory)($this->container->reveal());
+        ($this->factory)($this->container->reveal());
     }
 
     public function testInvokeWithContainerEmptyConfig()
@@ -47,13 +62,13 @@ class ZendAuthenticationFactoryTest extends TestCase
             ->willReturn(true);
         $this->container
             ->get(ResponseInterface::class)
-            ->willReturn($this->responsePrototype->reveal());
+            ->willReturn($this->responseFactory);
         $this->container
             ->get('config')
             ->willReturn([]);
 
         $this->expectException(InvalidConfigException::class);
-        $zendAuthentication = ($this->factory)($this->container->reveal());
+        ($this->factory)($this->container->reveal());
     }
 
     public function testInvokeWithContainerAndConfig()
@@ -69,7 +84,7 @@ class ZendAuthenticationFactoryTest extends TestCase
             ->willReturn(true);
         $this->container
             ->get(ResponseInterface::class)
-            ->willReturn($this->responsePrototype->reveal());
+            ->willReturn($this->responseFactory);
         $this->container
             ->get('config')
             ->willReturn([

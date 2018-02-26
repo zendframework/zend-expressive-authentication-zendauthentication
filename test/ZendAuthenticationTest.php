@@ -2,7 +2,7 @@
 /**
  * @see https://github.com/zendframework/zend-exprsesive-authentication-zendauthentication
  *     for the canonical source repository
- * @copyright Copyright (c) 2017 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2017-2018 Zend Technologies USA Inc. (http://www.zend.com)
  * @license https://github.com/zendframework/zend-exprsesive-authentication-zendauthentication/blob/master/LICENSE.md
  *     New BSD License
  */
@@ -11,6 +11,7 @@ namespace ZendTest\Expressive\Authentication\Adapter;
 
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Zend\Authentication\Adapter\AbstractAdapter;
@@ -23,6 +24,18 @@ use Zend\Expressive\Authentication\ZendAuthentication\ZendAuthentication;
 
 class ZendAuthenticationTest extends TestCase
 {
+    /** @var ServerRequestInterface|ObjectProphecy */
+    private $request;
+
+    /** @var AuthenticationService|ObjectProphecy */
+    private $authService;
+
+    /** @var UserInterface|ObjectProphecy */
+    private $authenticatedUser;
+
+    /** @var ResponseInterface|ObjectProphecy */
+    private $responsePrototype;
+
     protected function setUp()
     {
         $this->request = $this->prophesize(ServerRequestInterface::class);
