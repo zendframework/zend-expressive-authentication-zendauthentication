@@ -9,11 +9,13 @@
 
 namespace ZendTest\Expressive\Authentication\ZendAuthentication;
 
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
+use ReflectionProperty;
 use Zend\Authentication\AuthenticationService;
 use Zend\Expressive\Authentication\Exception\InvalidConfigException;
 use Zend\Expressive\Authentication\ZendAuthentication\ZendAuthentication;
@@ -30,6 +32,9 @@ class ZendAuthenticationFactoryTest extends TestCase
     /** @var AuthenticationService|ObjectProphecy */
     private $authService;
 
+    /** @var ResponseInterface|ObjectProphecy */
+    private $responsePrototype;
+
     /** @var callable */
     private $responseFactory;
 
@@ -38,8 +43,9 @@ class ZendAuthenticationFactoryTest extends TestCase
         $this->container = $this->prophesize(ContainerInterface::class);
         $this->factory = new ZendAuthenticationFactory();
         $this->authService = $this->prophesize(AuthenticationService::class);
+        $this->responsePrototype = $this->prophesize(ResponseInterface::class);
         $this->responseFactory = function () {
-            return $this->prophesize(ResponseInterface::class)->reveal();
+            return $this->responsePrototype->reveal();
         };
     }
 
@@ -93,5 +99,14 @@ class ZendAuthenticationFactoryTest extends TestCase
 
         $zendAuthentication = ($this->factory)($this->container->reveal());
         $this->assertInstanceOf(ZendAuthentication::class, $zendAuthentication);
+        $this->assertResponseFactoryReturns($this->responsePrototype->reveal(), $zendAuthentication);
+    }
+
+    public static function assertResponseFactoryReturns(ResponseInterface $expected, ZendAuthentication $service) : void
+    {
+        $r = new ReflectionProperty($service, 'responseFactory');
+        $r->setAccessible(true);
+        $responseFactory = $r->getValue($service);
+        Assert::assertSame($expected, $responseFactory());
     }
 }
