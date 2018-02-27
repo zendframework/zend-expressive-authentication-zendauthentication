@@ -10,14 +10,12 @@
 namespace Zend\Expressive\Authentication\ZendAuthentication;
 
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseInterface;
 use Zend\Authentication\AuthenticationService;
 use Zend\Expressive\Authentication\Exception;
-use Zend\Expressive\Authentication\ResponsePrototypeTrait;
 
 class ZendAuthenticationFactory
 {
-    use ResponsePrototypeTrait;
-
     public function __invoke(ContainerInterface $container) : ZendAuthentication
     {
         $auth = $container->has(AuthenticationService::class)
@@ -42,7 +40,7 @@ class ZendAuthenticationFactory
         return new ZendAuthentication(
             $auth,
             $config,
-            $this->getResponsePrototype($container)
+            $container->get(ResponseInterface::class)
         );
     }
 }

@@ -33,15 +33,17 @@ class ZendAuthenticationTest extends TestCase
     /** @var UserInterface|ObjectProphecy */
     private $authenticatedUser;
 
-    /** @var ResponseInterface|ObjectProphecy */
-    private $responsePrototype;
+    /** @var callable */
+    private $responseFactory;
 
     protected function setUp()
     {
         $this->request = $this->prophesize(ServerRequestInterface::class);
         $this->authService = $this->prophesize(AuthenticationService::class);
         $this->authenticatedUser = $this->prophesize(UserInterface::class);
-        $this->responsePrototype = $this->prophesize(ResponseInterface::class);
+        $this->responseFactory = function () {
+            return $this->prophesize(ResponseInterface::class)->reveal();
+        };
     }
 
     public function testConstructor()
@@ -49,7 +51,7 @@ class ZendAuthenticationTest extends TestCase
         $zendAuthentication = new ZendAuthentication(
             $this->authService->reveal(),
             [],
-            $this->responsePrototype->reveal()
+            $this->responseFactory
         );
         $this->assertInstanceOf(AuthenticationInterface::class, $zendAuthentication);
     }
@@ -63,7 +65,7 @@ class ZendAuthenticationTest extends TestCase
         $zendAuthentication = new ZendAuthentication(
             $this->authService->reveal(),
             [],
-            $this->responsePrototype->reveal()
+            $this->responseFactory
         );
         $result = $zendAuthentication->authenticate($this->request->reveal());
         $this->assertInstanceOf(UserInterface::class, $result);
@@ -77,7 +79,7 @@ class ZendAuthenticationTest extends TestCase
         $zendAuthentication = new ZendAuthentication(
             $this->authService->reveal(),
             [],
-            $this->responsePrototype->reveal()
+            $this->responseFactory
         );
         $this->assertNull($zendAuthentication->authenticate($this->request->reveal()));
     }
@@ -90,7 +92,7 @@ class ZendAuthenticationTest extends TestCase
         $zendAuthentication = new ZendAuthentication(
             $this->authService->reveal(),
             [],
-            $this->responsePrototype->reveal()
+            $this->responseFactory
         );
         $this->assertNull($zendAuthentication->authenticate($this->request->reveal()));
     }
@@ -119,7 +121,7 @@ class ZendAuthenticationTest extends TestCase
         $zendAuthentication = new ZendAuthentication(
             $this->authService->reveal(),
             [],
-            $this->responsePrototype->reveal()
+            $this->responseFactory
         );
         $this->assertNull($zendAuthentication->authenticate($this->request->reveal()));
     }
@@ -149,7 +151,7 @@ class ZendAuthenticationTest extends TestCase
         $zendAuthentication = new ZendAuthentication(
             $this->authService->reveal(),
             [],
-            $this->responsePrototype->reveal()
+            $this->responseFactory
         );
         $result = $zendAuthentication->authenticate($this->request->reveal());
         $this->assertInstanceOf(UserInterface::class, $result);
