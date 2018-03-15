@@ -14,6 +14,8 @@ use Psr\Http\Message\ResponseInterface;
 use Zend\Authentication\AuthenticationService;
 use Zend\Expressive\Authentication\Exception;
 
+use function sprintf;
+
 class ZendAuthenticationFactory
 {
     public function __invoke(ContainerInterface $container) : ZendAuthentication
