@@ -2,7 +2,7 @@
 /**
  * @see https://github.com/zendframework/zend-exprsesive-authentication-zendauthentication
  *     for the canonical source repository
- * @copyright Copyright (c) 2017 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2017-2018 Zend Technologies USA Inc. (http://www.zend.com)
  * @license https://github.com/zendframework/zend-exprsesive-authentication-zendauthentication/blob/master/LICENSE.md
  *     New BSD License
  */
@@ -15,6 +15,8 @@ use Zend\Authentication\AuthenticationService;
 use Zend\Expressive\Authentication\AuthenticationInterface;
 use Zend\Expressive\Authentication\UserInterface;
 use Zend\Expressive\Authentication\UserRepository\UserTrait;
+
+use function strtoupper;
 
 class ZendAuthentication implements AuthenticationInterface
 {
@@ -31,30 +33,24 @@ class ZendAuthentication implements AuthenticationInterface
     protected $config;
 
     /**
-     * @var ResponseInterface
+     * @var callable
      */
-    protected $responsePrototype;
+    protected $responseFactory;
 
-    /**
-     * Constructor
-     *
-     * @param AuthenticationService $auth
-     * @param array $config
-     * @param ResponseInterface $responsePrototype
-     */
     public function __construct(
         AuthenticationService $auth,
         array $config,
-        ResponseInterface $responsePrototype
+        callable $responseFactory
     ) {
         $this->auth = $auth;
         $this->config = $config;
-        $this->responsePrototype = $responsePrototype;
+
+        // Ensures type safety of the composed factory
+        $this->responseFactory = function () use ($responseFactory) : ResponseInterface {
+            return $responseFactory();
+        };
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function authenticate(ServerRequestInterface $request) : ?UserInterface
     {
         if ('POST' === strtoupper($request->getMethod())) {
@@ -66,12 +62,9 @@ class ZendAuthentication implements AuthenticationInterface
             : null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function unauthorizedResponse(ServerRequestInterface $request): ResponseInterface
+    public function unauthorizedResponse(ServerRequestInterface $request) : ResponseInterface
     {
-        return $this->responsePrototype
+        return ($this->responseFactory)()
             ->withHeader(
                 'Location',
                 $this->config['redirect']

@@ -2,17 +2,19 @@
 /**
  * @see https://github.com/zendframework/zend-exprsesive-authentication-zendauthentication
  *     for the canonical source repository
- * @copyright Copyright (c) 2017 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2017-2018 Zend Technologies USA Inc. (http://www.zend.com)
  * @license https://github.com/zendframework/zend-exprsesive-authentication-zendauthentication/blob/master/LICENSE.md
  *     New BSD License
  */
 
 namespace ZendTest\Expressive\Authentication\ZendAuthentication;
 
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
+use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
+use ReflectionProperty;
 use Zend\Authentication\AuthenticationService;
 use Zend\Expressive\Authentication\Exception\InvalidConfigException;
 use Zend\Expressive\Authentication\ZendAuthentication\ZendAuthentication;
@@ -20,18 +22,36 @@ use Zend\Expressive\Authentication\ZendAuthentication\ZendAuthenticationFactory;
 
 class ZendAuthenticationFactoryTest extends TestCase
 {
+    /** @var ContainerInterface|ObjectProphecy */
+    private $container;
+
+    /** @var ZendAuthentication */
+    private $factory;
+
+    /** @var AuthenticationService|ObjectProphecy */
+    private $authService;
+
+    /** @var ResponseInterface|ObjectProphecy */
+    private $responsePrototype;
+
+    /** @var callable */
+    private $responseFactory;
+
     protected function setUp()
     {
         $this->container = $this->prophesize(ContainerInterface::class);
         $this->factory = new ZendAuthenticationFactory();
         $this->authService = $this->prophesize(AuthenticationService::class);
         $this->responsePrototype = $this->prophesize(ResponseInterface::class);
+        $this->responseFactory = function () {
+            return $this->responsePrototype->reveal();
+        };
     }
 
     public function testInvokeWithEmptyContainer()
     {
         $this->expectException(InvalidConfigException::class);
-        $zendAuthentication = ($this->factory)($this->container->reveal());
+        ($this->factory)($this->container->reveal());
     }
 
     public function testInvokeWithContainerEmptyConfig()
@@ -47,13 +67,13 @@ class ZendAuthenticationFactoryTest extends TestCase
             ->willReturn(true);
         $this->container
             ->get(ResponseInterface::class)
-            ->willReturn($this->responsePrototype->reveal());
+            ->willReturn($this->responseFactory);
         $this->container
             ->get('config')
             ->willReturn([]);
 
         $this->expectException(InvalidConfigException::class);
-        $zendAuthentication = ($this->factory)($this->container->reveal());
+        ($this->factory)($this->container->reveal());
     }
 
     public function testInvokeWithContainerAndConfig()
@@ -69,7 +89,7 @@ class ZendAuthenticationFactoryTest extends TestCase
             ->willReturn(true);
         $this->container
             ->get(ResponseInterface::class)
-            ->willReturn($this->responsePrototype->reveal());
+            ->willReturn($this->responseFactory);
         $this->container
             ->get('config')
             ->willReturn([
@@ -78,5 +98,14 @@ class ZendAuthenticationFactoryTest extends TestCase
 
         $zendAuthentication = ($this->factory)($this->container->reveal());
         $this->assertInstanceOf(ZendAuthentication::class, $zendAuthentication);
+        $this->assertResponseFactoryReturns($this->responsePrototype->reveal(), $zendAuthentication);
+    }
+
+    public static function assertResponseFactoryReturns(ResponseInterface $expected, ZendAuthentication $service) : void
+    {
+        $r = new ReflectionProperty($service, 'responseFactory');
+        $r->setAccessible(true);
+        $responseFactory = $r->getValue($service);
+        Assert::assertSame($expected, $responseFactory());
     }
 }
