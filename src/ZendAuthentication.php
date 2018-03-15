@@ -16,6 +16,8 @@ use Zend\Expressive\Authentication\AuthenticationInterface;
 use Zend\Expressive\Authentication\UserInterface;
 use Zend\Expressive\Authentication\UserRepository\UserTrait;
 
+use function strtoupper;
+
 class ZendAuthentication implements AuthenticationInterface
 {
     use UserTrait;

@@ -10,16 +10,14 @@
 namespace ZendTest\Expressive\Authentication\Adapter;
 
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Zend\Authentication\Adapter\AbstractAdapter;
 use Zend\Authentication\AuthenticationService;
 use Zend\Authentication\Result;
 use Zend\Expressive\Authentication\AuthenticationInterface;
 use Zend\Expressive\Authentication\UserInterface;
-use Zend\Expressive\Authentication\UserRepositoryInterface;
 use Zend\Expressive\Authentication\ZendAuthentication\ZendAuthentication;
 
 class ZendAuthenticationTest extends TestCase
