@@ -97,6 +97,9 @@ class ZendAuthenticationTest extends TestCase
 
     public function testAuthenticateWithPostMethodAndNoValidCredential()
     {
+        //not authenticated
+        $this->authService->hasIdentity()->willReturn(false);
+
         $this->request->getMethod()->willReturn('POST');
         $this->request->getParsedBody()->willReturn([
             'username' => 'foo',
@@ -126,6 +129,9 @@ class ZendAuthenticationTest extends TestCase
 
     public function testAuthenticateWithPostMethodAndValidCredential()
     {
+        //not authenticated
+        $this->authService->hasIdentity()->willReturn(false);
+
         $this->request->getMethod()->willReturn('POST');
         $this->request->getParsedBody()->willReturn([
             'username' => 'foo',
@@ -152,6 +158,58 @@ class ZendAuthenticationTest extends TestCase
             $this->responseFactory
         );
         $result = $zendAuthentication->authenticate($this->request->reveal());
+        $this->assertInstanceOf(UserInterface::class, $result);
+    }
+
+    public function testAuthenticateWithPostMethodAndNoValidCredentialAndAlreadyAuthenticated()
+    {
+        $this->authService->hasIdentity()->willReturn(true);
+        $this->authService->getIdentity()->willReturn('string');
+
+        $this->request->getMethod()->willReturn('POST');
+        $this->request->getParsedBody()->willReturn([
+            'username' => 'foo',
+            'password' => 'bar',
+        ]);
+        $adapter = $this->prophesize(AbstractAdapter::class);
+        $adapter->setIdentity('foo')->willReturn(null);
+        $adapter->setCredential('bar')->willReturn();
+
+        $this->authService
+            ->getAdapter()
+            ->willReturn($adapter->reveal());
+        $result = $this->prophesize(Result::class);
+        $result->isValid()->willReturn(false);
+
+        $this->authService
+            ->authenticate()
+            ->willReturn($result);
+
+        $zendAuthentication = new ZendAuthentication(
+            $this->authService->reveal(),
+            [],
+            $this->responseFactory
+        );
+        $identity = $zendAuthentication->authenticate($this->request->reveal());
+        $this->assertInstanceOf(UserInterface::class, $identity);
+        $this->assertEquals('string', $identity->getIdentity());
+    }
+
+    public function testAuthenticateWithPostMethodAndValidCredentialAndAlreadyAuthenticated()
+    {
+        $this->authService->hasIdentity()->willReturn(true);
+        $this->authService->getIdentity()->willReturn('string');
+
+        $this->request->getMethod()->willReturn('POST');
+
+        $zendAuthentication = new ZendAuthentication(
+            $this->authService->reveal(),
+            [],
+            $this->responseFactory
+        );
+
+        $result = $zendAuthentication->authenticate($this->request->reveal());
+
         $this->assertInstanceOf(UserInterface::class, $result);
     }
 }

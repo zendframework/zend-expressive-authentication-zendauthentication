@@ -53,13 +53,16 @@ class ZendAuthentication implements AuthenticationInterface
 
     public function authenticate(ServerRequestInterface $request) : ?UserInterface
     {
-        if ('POST' === strtoupper($request->getMethod())) {
-            return $this->initiateAuthentication($request);
+        if (! $this->auth->hasIdentity()) {
+            if ('POST' === strtoupper($request->getMethod())) {
+                return $this->initiateAuthentication($request);
+            }
+            $identity = null;
+        } else {
+            $identity = $this->generateUser($this->auth->getIdentity(), []);
         }
 
-        return $this->auth->hasIdentity()
-            ? $this->generateUser($this->auth->getIdentity(), [])
-            : null;
+        return $identity;
     }
 
     public function unauthorizedResponse(ServerRequestInterface $request) : ResponseInterface
