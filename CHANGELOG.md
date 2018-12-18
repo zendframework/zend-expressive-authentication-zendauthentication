@@ -2,12 +2,11 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
-## 1.0.0 - TBD
+## 1.0.0 - 2018-12-18
 
 ### Added
 
-- [#9](https://github.com/zendframework/zend-expressive-authentication-zendauthentication/pull/9)
-  introduces the usage of zend-expressive-authentication ^ 1.0.
+- [#9](https://github.com/zendframework/zend-expressive-authentication-zendauthentication/pull/9) updates the component to implement the zend-expressive-authentication 1.0 interfaces.
 
 ### Changed
 
@@ -23,10 +22,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- [#7](https://github.com/zendframework/zend-expressive-authentication-zendauthentication/pull/7)
-  avoids `initiateAuthentication` call on any forms with POST method behind
-  authentication.
-
+- [#7](https://github.com/zendframework/zend-expressive-authentication-zendauthentication/pull/7) avoids `initiateAuthentication` call on any forms with POST method behind authentication.
 
 ## 0.4.0 - 2018-03-15
 
