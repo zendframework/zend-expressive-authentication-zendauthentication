@@ -7,6 +7,8 @@
  *     New BSD License
  */
 
+declare(strict_types=1);
+
 namespace ZendTest\Expressive\Authentication\Adapter;
 
 use PHPUnit\Framework\TestCase;
@@ -34,6 +36,12 @@ class ZendAuthenticationTest extends TestCase
     /** @var callable */
     private $responseFactory;
 
+    /** @var callable */
+    private $userFactory;
+
+    /** @var UserInterface|ObjectProphecy */
+    private $userPrototype;
+
     protected function setUp()
     {
         $this->request = $this->prophesize(ServerRequestInterface::class);
@@ -42,6 +50,10 @@ class ZendAuthenticationTest extends TestCase
         $this->responseFactory = function () {
             return $this->prophesize(ResponseInterface::class)->reveal();
         };
+        $this->userPrototype = $this->prophesize(UserInterface::class);
+        $this->userFactory = function () {
+            return $this->userPrototype->reveal();
+        };
     }
 
     public function testConstructor()
@@ -49,7 +61,8 @@ class ZendAuthenticationTest extends TestCase
         $zendAuthentication = new ZendAuthentication(
             $this->authService->reveal(),
             [],
-            $this->responseFactory
+            $this->responseFactory,
+            $this->userFactory
         );
         $this->assertInstanceOf(AuthenticationInterface::class, $zendAuthentication);
     }
@@ -63,7 +76,8 @@ class ZendAuthenticationTest extends TestCase
         $zendAuthentication = new ZendAuthentication(
             $this->authService->reveal(),
             [],
-            $this->responseFactory
+            $this->responseFactory,
+            $this->userFactory
         );
         $result = $zendAuthentication->authenticate($this->request->reveal());
         $this->assertInstanceOf(UserInterface::class, $result);
@@ -77,7 +91,8 @@ class ZendAuthenticationTest extends TestCase
         $zendAuthentication = new ZendAuthentication(
             $this->authService->reveal(),
             [],
-            $this->responseFactory
+            $this->responseFactory,
+            $this->userFactory
         );
         $this->assertNull($zendAuthentication->authenticate($this->request->reveal()));
     }
@@ -90,7 +105,8 @@ class ZendAuthenticationTest extends TestCase
         $zendAuthentication = new ZendAuthentication(
             $this->authService->reveal(),
             [],
-            $this->responseFactory
+            $this->responseFactory,
+            $this->userFactory
         );
         $this->assertNull($zendAuthentication->authenticate($this->request->reveal()));
     }
@@ -122,7 +138,8 @@ class ZendAuthenticationTest extends TestCase
         $zendAuthentication = new ZendAuthentication(
             $this->authService->reveal(),
             [],
-            $this->responseFactory
+            $this->responseFactory,
+            $this->userFactory
         );
         $this->assertNull($zendAuthentication->authenticate($this->request->reveal()));
     }
@@ -155,7 +172,8 @@ class ZendAuthenticationTest extends TestCase
         $zendAuthentication = new ZendAuthentication(
             $this->authService->reveal(),
             [],
-            $this->responseFactory
+            $this->responseFactory,
+            $this->userFactory
         );
         $result = $zendAuthentication->authenticate($this->request->reveal());
         $this->assertInstanceOf(UserInterface::class, $result);
@@ -185,10 +203,13 @@ class ZendAuthenticationTest extends TestCase
             ->authenticate()
             ->willReturn($result);
 
+        $this->userPrototype->getIdentity()->willReturn('string');
+
         $zendAuthentication = new ZendAuthentication(
             $this->authService->reveal(),
             [],
-            $this->responseFactory
+            $this->responseFactory,
+            $this->userFactory
         );
         $identity = $zendAuthentication->authenticate($this->request->reveal());
         $this->assertInstanceOf(UserInterface::class, $identity);
@@ -205,7 +226,8 @@ class ZendAuthenticationTest extends TestCase
         $zendAuthentication = new ZendAuthentication(
             $this->authService->reveal(),
             [],
-            $this->responseFactory
+            $this->responseFactory,
+            $this->userFactory
         );
 
         $result = $zendAuthentication->authenticate($this->request->reveal());

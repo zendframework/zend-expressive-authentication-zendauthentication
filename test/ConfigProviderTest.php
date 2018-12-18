@@ -7,6 +7,8 @@
  *     New BSD License
  */
 
+declare(strict_types=1);
+
 namespace ZendTest\Expressive\Authentication\ZendAuthentication;
 
 use PHPUnit\Framework\TestCase;

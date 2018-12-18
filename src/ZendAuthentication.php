@@ -7,6 +7,8 @@
  *     New BSD License
  */
 
+declare(strict_types=1);
+
 namespace Zend\Expressive\Authentication\ZendAuthentication;
 
 use Psr\Http\Message\ResponseInterface;
@@ -14,14 +16,11 @@ use Psr\Http\Message\ServerRequestInterface;
 use Zend\Authentication\AuthenticationService;
 use Zend\Expressive\Authentication\AuthenticationInterface;
 use Zend\Expressive\Authentication\UserInterface;
-use Zend\Expressive\Authentication\UserRepository\UserTrait;
 
 use function strtoupper;
 
 class ZendAuthentication implements AuthenticationInterface
 {
-    use UserTrait;
-
     /**
      * @var AuthenticationService
      */
@@ -37,10 +36,16 @@ class ZendAuthentication implements AuthenticationInterface
      */
     protected $responseFactory;
 
+    /**
+     * @var callable
+     */
+    protected $userFactory;
+
     public function __construct(
         AuthenticationService $auth,
         array $config,
-        callable $responseFactory
+        callable $responseFactory,
+        callable $userFactory
     ) {
         $this->auth = $auth;
         $this->config = $config;
@@ -48,6 +53,15 @@ class ZendAuthentication implements AuthenticationInterface
         // Ensures type safety of the composed factory
         $this->responseFactory = function () use ($responseFactory) : ResponseInterface {
             return $responseFactory();
+        };
+
+        // Ensures type safety of the composed factory
+        $this->userFactory = function (
+            string $identity,
+            array $roles = [],
+            array $details = []
+        ) use ($userFactory) : UserInterface {
+            return $userFactory($identity, $roles, $details);
         };
     }
 
@@ -57,12 +71,10 @@ class ZendAuthentication implements AuthenticationInterface
             if ('POST' === strtoupper($request->getMethod())) {
                 return $this->initiateAuthentication($request);
             }
-            $identity = null;
-        } else {
-            $identity = $this->generateUser($this->auth->getIdentity(), []);
+            return null;
         }
 
-        return $identity;
+        return ($this->userFactory)($this->auth->getIdentity());
     }
 
     public function unauthorizedResponse(ServerRequestInterface $request) : ResponseInterface
@@ -93,7 +105,6 @@ class ZendAuthentication implements AuthenticationInterface
             return null;
         }
 
-        // @todo the role is missing
-        return $this->generateUser($result->getIdentity(), []);
+        return ($this->userFactory)($result->getIdentity());
     }
 }

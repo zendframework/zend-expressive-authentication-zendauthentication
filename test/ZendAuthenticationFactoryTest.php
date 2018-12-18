@@ -7,6 +7,8 @@
  *     New BSD License
  */
 
+declare(strict_types=1);
+
 namespace ZendTest\Expressive\Authentication\ZendAuthentication;
 
 use PHPUnit\Framework\Assert;
@@ -16,6 +18,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use ReflectionProperty;
 use Zend\Authentication\AuthenticationService;
+use Zend\Expressive\Authentication\UserInterface;
 use Zend\Expressive\Authentication\Exception\InvalidConfigException;
 use Zend\Expressive\Authentication\ZendAuthentication\ZendAuthentication;
 use Zend\Expressive\Authentication\ZendAuthentication\ZendAuthenticationFactory;
@@ -37,6 +40,12 @@ class ZendAuthenticationFactoryTest extends TestCase
     /** @var callable */
     private $responseFactory;
 
+    /** @var UserInterface|ObjectProphecy */
+    private $userPrototype;
+
+    /** @var callable */
+    private $userFactory;
+
     protected function setUp()
     {
         $this->container = $this->prophesize(ContainerInterface::class);
@@ -45,6 +54,10 @@ class ZendAuthenticationFactoryTest extends TestCase
         $this->responsePrototype = $this->prophesize(ResponseInterface::class);
         $this->responseFactory = function () {
             return $this->responsePrototype->reveal();
+        };
+        $this->userPrototype = $this->prophesize(UserInterface::class);
+        $this->userFactory = function () {
+            return $this->userPrototype->reveal();
         };
     }
 
@@ -69,6 +82,12 @@ class ZendAuthenticationFactoryTest extends TestCase
             ->get(ResponseInterface::class)
             ->willReturn($this->responseFactory);
         $this->container
+            ->has(UserInterface::class)
+            ->willReturn(true);
+        $this->container
+            ->get(UserInterface::class)
+            ->willReturn($this->userFactory);
+        $this->container
             ->get('config')
             ->willReturn([]);
 
@@ -90,6 +109,12 @@ class ZendAuthenticationFactoryTest extends TestCase
         $this->container
             ->get(ResponseInterface::class)
             ->willReturn($this->responseFactory);
+        $this->container
+            ->has(UserInterface::class)
+            ->willReturn(true);
+        $this->container
+            ->get(UserInterface::class)
+            ->willReturn($this->userFactory);
         $this->container
             ->get('config')
             ->willReturn([

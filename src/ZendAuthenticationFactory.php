@@ -7,12 +7,15 @@
  *     New BSD License
  */
 
+declare(strict_types=1);
+
 namespace Zend\Expressive\Authentication\ZendAuthentication;
 
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Zend\Authentication\AuthenticationService;
 use Zend\Expressive\Authentication\Exception;
+use Zend\Expressive\Authentication\UserInterface;
 
 use function sprintf;
 
@@ -39,10 +42,17 @@ class ZendAuthenticationFactory
             );
         }
 
+        if (! $container->has(UserInterface::class)) {
+            throw new Exception\InvalidConfigException(
+                'UserInterface factory service is missing for authentication'
+            );
+        }
+
         return new ZendAuthentication(
             $auth,
             $config,
-            $container->get(ResponseInterface::class)
+            $container->get(ResponseInterface::class),
+            $container->get(UserInterface::class)
         );
     }
 }
